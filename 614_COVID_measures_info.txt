@@ -5,7 +5,7 @@ Measure: Partial Lockdown
 
 Measure: Flight Restrictions in/out China
         -Italy description: Limited flights to and from China (31/01/2020)
-	-South Korea description: Restricted entry for travelers with passports from China's Hubei Province and those who have visited the          region in the past 14 days (10/03/2020)
+	-South Korea description: Restricted entry for travelers with passports from China's Hubei Province and those who have visited the region in the past 14 days (10/03/2020)
 
 
 Measure: Schools Closure 
