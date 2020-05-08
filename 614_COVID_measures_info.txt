@@ -1,1 +1,14 @@
-Measure: Partial Lockdown	Italy description: General lockdown across component of everyday life; businesses 	can continue if they implement safety measures (08/03/2020)	South Korea description: Korean government will restrict the operation of some 		facilities, such as religious facilities, indoor sports, and entertainment 		facilities which are at high risk of infection. (22/03/2020) Measure: Flight Restrictions in/out China      Italy description: Limited flights to and from China (31/01/2020)	South Korea description: Restricted entry for travelers with passports from 		China's Hubei Province and those who have visited the region in the past 14 days 	(10/03/2020)Measure: Schools Closure 	Italy description: In all municipalities that are affected (case >1) schools of 	any level will be closed (21/02/2020)      South Korea description: No description (27/02/2020)
+Measure: Partial Lockdown
+	-Italy description: General lockdown across component of everyday life; businesses can continue if they implement safety measures (08/03/2020)
+	-South Korea description: Korean government will restrict the operation of some facilities, such as religious facilities, indoor sports, and entertainment facilities which are at high risk of infection. (22/03/2020) 
+
+
+Measure: Flight Restrictions in/out China
+    -Italy description: Limited flights to and from China (31/01/2020)
+	  -South Korea description: Restricted entry for travelers with passports from China's Hubei Province and those who have visited the          region in the past 14 days (10/03/2020)
+
+
+Measure: Schools Closure 
+	  -Italy description: In all municipalities that are affected (case >1) schools of 	any level will be closed (21/02/2020)
+    -South Korea description: No description (27/02/2020)
+
