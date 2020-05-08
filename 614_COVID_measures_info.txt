@@ -9,6 +9,6 @@ Measure: Flight Restrictions in/out China
 
 
 Measure: Schools Closure 
-	  -Italy description: In all municipalities that are affected (case >1) schools of 	any level will be closed (21/02/2020)
+	  -Italy description: In all municipalities that are affected (case >1) schools of any level will be closed (21/02/2020)
     -South Korea description: No description (27/02/2020)
 
