@@ -1,0 +1,91 @@
+---
+title: '"Covid_GovMeasures_BivariateViz"'
+author: "Priyanka Sharma"
+date: "5/8/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r}
+library(tseries)    
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(caret)
+library(ggridges)
+
+df0 <- read.csv(file="HS614_COVID_dataset.csv", header=TRUE)
+head(df0)
+
+df0$date <- as.Date(df0$date, "%m/%d/%y")
+
+df1 <- select(df0, c(country, tagged_day, new_confirmed, new_deaths, partial_lockdown, flights_china, school_closure))
+head(df1)
+```
+
+Tagged day x New death and New confirmed 
+```{r}
+ggplot(df1, aes(x=tagged_day, y= new_deaths, group=country, colour=country)) + geom_path() + geom_point()
+
+ggplot(df1, aes(x=tagged_day, y= new_confirmed, group=country, colour=country)) + geom_path() + geom_point()
+
+```
+```{r}
+ggplot(df1, aes(x= flights_china, y= new_confirmed, group=country, colour=country)) + geom_path() + geom_point()
+
+ggplot(df1, aes(x= flights_china, y= new_deaths, group=country, colour=country)) + geom_path() + geom_point()
+```
+
+
+
+BAR TAGGED DAY x new confirmed and new deaths
+```{r}
+ggplot(data = df1, aes(x = tagged_day, y = new_confirmed, color = country)) + geom_bar(stat = "identity") 
+
+ggplot(data = df1, aes(x = tagged_day, y = new_deaths, color = country)) + geom_bar(stat = "identity") 
+```
+
+BAR PARTIAL LOCKDOWN x new confirmed and new deaths 
+```{r}
+ggplot(data = df1, aes(x = partial_lockdown, y = new_confirmed, color = country)) + geom_bar(stat = "identity") 
+
+ggplot(data = df1, aes(x = partial_lockdown, y = new_deaths, color = country)) + geom_bar(stat = "identity") 
+```
+
+
+```{r}
+ggplot(df1, aes(x = partial_lockdown, y = new_deaths, color = country)) + geom_line()
+
+ggplot(df1, aes(x = partial_lockdown, y = new_confirmed, color = country)) + geom_line()
+```
+
+Showing Korea has much less confirmed cases and confirmed deaths than italy, different peaks 
+```{r}
+ggplot(df1, 
+      aes(x = new_confirmed, 
+          y = country, 
+          fill = country)) +
+  geom_density_ridges() + 
+  theme_ridges() 
+
+ggplot(df1, 
+      aes(x = new_deaths, 
+          y = country, 
+          fill = country)) +
+  geom_density_ridges() + 
+  theme_ridges() 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
