@@ -85,7 +85,15 @@ italy_pred
 PredVsActual <- data.frame(df1_italy$tagged_day[61:75],df1_italy$new_deaths[61:75], italy_pred)
 PredVsActual
 
-plot(future_tagged_day, italy_pred)
+ggplot() + geom_point(aes(x =PredVsActual$df1_italy.tagged_day.61.75., 
+                        y = PredVsActual$df1_italy.new_deaths.61.75.,colour = "actual")) + 
+           geom_smooth(aes(x =PredVsActual$df1_italy.tagged_day.61.75., 
+                 y = PredVsActual$df1_italy.new_deaths.61.75.,colour = "actual")) +
+          geom_point(aes(x =PredVsActual$df1_italy.tagged_day.61.75., 
+                 y = PredVsActual$italy_pred,colour = "predicted")) + 
+          geom_smooth(aes(x =PredVsActual$df1_italy.tagged_day.61.75., 
+                  y = PredVsActual$italy_pred,colour = "predicted")) + xlab("Tagged day") +
+            ylab("New_deaths") + ggtitle("Predicted vs Actual new_deaths for Italy")
 
 ##############################################################################################################
 # for flights_china vs new_deaths
