@@ -3,6 +3,9 @@ setwd("~/Documents/KHUSHBU/MS/py_scripts_main/GitHub/Modeling-of-COVID-19-GovMea
 library(dplyr)
 library (ggplot2)
 library(caret)
+library(nlstools)
+
+# set.seed(1000)
 
 df0 <- read.csv(file="HS614_COVID_dataset.csv", header=TRUE)
 head(df0)
@@ -21,6 +24,8 @@ plot(df1_italy$tagged_day, df1_italy$new_deaths)
 plot(df1_korea$tagged_day, df1_korea$new_deaths)
 
 # correlation
+cor(df1_korea[, 2:7], use = "pairwise.complete.obs", method = "pearson")
+
 
 # #Determine the nonlinear (weighted) least-squares estimates of
 #  the parameters of a nonlinear model: Gaussian
@@ -39,32 +44,120 @@ f <- function(x, theta)  {
 }
 
 # Difficult part: Estimate some starting values: crude
+# m is x values at which peak occurs
 m.0 <- x[which.max(y)] # argmax
+# s>0 quantifies the rate at which the curve tapers off
 s.0 <- (max(x)-min(x))/6
 #s.0 <- (max(x)-min(x))/4 # too fast? Make more guassian
-b.0 <- min(y)
-a.0 <- (max(y)-min(y))
-# m is x values at which peak occurs
-# s>0 quantifies the rate at which the curve tapers off
-# a>0 reflects the overall magnitudes of the relative y values (range)
 # b is a baseline (min y)
+b.0 <- min(y)
+# a>0 reflects the overall magnitudes of the relative y values (range)
+a.0 <- (max(y)-min(y))
+
 c(m=m.0, s=s.0, a=a.0, b=b.0)
 
 # Do the fit. 
 fit <- nls(y ~ f(x,c(m,s,a,b)), data.frame(x,y), start=list(m=m.0, s=s.0, a=a.0, b=b.0))
 # a*exp(-0.5*((x-m)/s)^2) + b
 summary(fit)
+
+plot(nlsResiduals(fit), which=0)
+
 #850.5028*exp(-0.5*((x-44.4252)/19.4156)^2)  -124.2956
 #Predict day 76: May 06, 2020 - should be #369
-850.5028*exp(-0.5*((76-44.4252)/19.4156)^2)  -124.2956
-
-# Display the estimated location of the peak and its SE.
-summary(fit)$parameters["m", 1:2]
-#
+850.5028*exp(-0.5*((76-44.4252)/19.4156)^2)  -124.2956  # 102
 
 # Display the estimated location of the peak and its SE.
 summary(fit)$parameters["m", 1:2]
 fit_peak_loc <-ceiling(summary(fit)$parameters["m", 1])
 df1_italy$new_deaths[fit_peak_loc]
 
+# future days predictions for the curve
+future_tagged_day <- c(76:78)
+
+italy_pred <- 850.5028*exp(-0.5*((future_tagged_day-44.4252)/19.4156)^2)  -124.2956
+italy_pred
+
+# from day 76-78
+italy_actual_future <- c(369, 274, 243)
+
+pred_actual <- data.frame(future_tagged_day, italy_pred,italy_actual_future)
+pred_actual
+
+plot(future_tagged_day, italy_pred)
+
+#######################################################
+# for flights_china vs new_deaths
+
+y <- df1_italy$new_deaths
+x <- df1_italy$flights_china
+
+# Define a Gaussian function (of four parameters)
+f <- function(x, theta)  { 
+  m <- theta[1]; s <- theta[2]; a <- theta[3]; b <- theta[4];
+  a*exp(-0.5*((x-m)/s)^2) + b
+}
+
+# Difficult part: Estimate some starting values: crude
+# m is x values at which peak occurs
+m.0 <- x[which.max(y)] # argmax
+# s>0 quantifies the rate at which the curve tapers off
+s.0 <- (max(x)-min(x))/6
+#s.0 <- (max(x)-min(x))/4 # too fast? Make more guassian
+# b is a baseline (min y)
+b.0 <- min(y)
+# a>0 reflects the overall magnitudes of the relative y values (range)
+a.0 <- (max(y)-min(y))
+
+c(m=m.0, s=s.0, a=a.0, b=b.0)
+
+# Do the fit. 
+fit <- nls(y ~ f(x,c(m,s,a,b)), data.frame(x,y), start=list(m=m.0, s=s.0, a=a.0, b=b.0))
+# a*exp(-0.5*((x-m)/s)^2) + b
+summary(fit)
+
+plot(nlsResiduals(fit), which=0)
+
+#850.5028*exp(-0.5*((x-44.4252)/19.4156)^2)  -124.2956
+#Predict day 57 flights closure 
+850.5028*exp(-0.5*((76-44.4252)/19.4156)^2)  -124.2956  # 102
+
+# Display the estimated location of the peak and its SE.
+summary(fit)$parameters["m", 1:2]
+fit_peak_loc <-ceiling(summary(fit)$parameters["m", 1])
+df1_italy$new_deaths[fit_peak_loc]
+
+# future days predictions for the curve
+future_tagged_day <- c(76:78)
+
+italy_pred <- 850.5028*exp(-0.5*((future_tagged_day-44.4252)/19.4156)^2)  -124.2956
+italy_pred
+
+# from day 76-78
+italy_actual_future <- c(369, 274, 243)
+
+pred_actual <- data.frame(future_tagged_day, italy_pred,italy_actual_future)
+pred_actual
+
+plot(future_tagged_day, italy_pred)
+
+#######################################################
+# for new_confirmed vs new_deaths
+
+#######################################################
+# trying negative binomial regression
+
+library(MASS)
+library(rgl)
+library(corrplot)
+library(pwr)
+library(pscl)
+library(car)
+
+fit_nbr <- glm.nb(new_deaths ~ tagged_day + new_confirmed + flights_china, data=df1)
+fit_nbr$theta
+summary(fit_nbr)
+# anova(fit_nbr)
+
+# vif(fit_nbr)
 
