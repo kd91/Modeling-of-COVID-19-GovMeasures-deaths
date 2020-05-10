@@ -215,4 +215,3 @@ ggplot() + geom_point(aes(x =PredVsActual$df1_korea.new_confirmed.61.90.,
   geom_smooth(aes(x =PredVsActual$df1_korea.new_confirmed.61.90., 
                   y = PredVsActual$korea_pred,colour = "predicted")) + xlab("New Confirmed Cases") +
   ylab("New_deaths") + ggtitle("Predicted vs Actual new_deaths for South Korea")
-
