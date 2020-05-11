@@ -63,9 +63,13 @@ c(m=m.0, s=s.0, a=a.0, b=b.0)
 fit <- nls(y ~ f(x,c(m,s,a,b)), data.frame(x,y), start=list(m=m.0, s=s.0, a=a.0, b=b.0))
 summary(fit)
 
-plot(nlsResiduals(fit), which=0)
+rls <- nlsResiduals(fit)
+plot(rls, which=0)
 #it's not a very good fit. 
 # points are dispersed equally above & below the line
+
+test.nlsResiduals(rls)
+confint(fit)
 
 #interpretation:
 # a*exp(-0.5*((x-m)/s)^2) + b
@@ -214,3 +218,4 @@ ggplot() + geom_point(aes(x =PredVsActual$df1_italy.new_confirmed.61.75.,
   geom_smooth(aes(x =PredVsActual$df1_italy.new_confirmed.61.75., 
                   y = PredVsActual$italy_pred,colour = "predicted")) + xlab("Number of confirmed cases") +
   ylab("New_deaths") + ggtitle("Predicted vs Actual new_deaths for Italy")
+
