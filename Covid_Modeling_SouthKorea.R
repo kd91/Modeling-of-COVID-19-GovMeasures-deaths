@@ -1,4 +1,4 @@
-setwd("/Users/tiffanytoor1/desktop/MSHI/614/COVID_614")
+setwd("~/Documents/KHUSHBU/MS/py_scripts_main/GitHub/Modeling-of-COVID-19-GovMeasures-deaths")
 
 library(dplyr)
 library (ggplot2)
@@ -25,7 +25,7 @@ plot(df1_korea$tagged_day, df1_korea$new_deaths)
 # correlation
 cor(df1_korea[, 2:7], use = "pairwise.complete.obs", method = "pearson")
 
-
+####################################################################################
 # #Determine the nonlinear (weighted) least-squares estimates of
 #  the parameters of a nonlinear model: Gaussian
 #https://stats.stackexchange.com/questions/70153/linear-regression-best-polynomial-or-better-approach-to-use/70184#70184
@@ -58,8 +58,6 @@ fit <- nls(y_korea ~ f(x_korea,c(m,s,a,b)), data.frame(x_korea,y_korea), start=l
 # a*exp(-0.5*((x-m)/s)^2) + b
 summary(fit)
 
-plot(nlsResiduals(fit), which=0)
-
 #Interpretation:
 #Predict day 61: April 06, 2020 - should be #3
 6.510*exp(-0.5*((61-49.366)/23.059)^2)  -1.141  #4.59
@@ -73,22 +71,30 @@ fit_peak_loc <-ceiling(summary(fit)$parameters["m", 1])
 df1_korea$new_deaths[fit_peak_loc] #5
 
 # future days predictions for the curve
-
 korea_pred <- 6.510*exp(-0.5*((df1_korea$tagged_day[61:90]-49.366)/23.059)^2) -1.141
+korea_pred <- ceiling(korea_pred)
 korea_pred
 
-PredVsActual <- data.frame(df1_korea$tagged_day[61:90],df1_korea$new_deaths[61:90], korea_pred)
+# model evaluation fro residuals and MAE
+plot(nlsResiduals(fit), which=0)
+MAE(korea_pred, df1_korea$new_deaths[61:90])
+
+# vector with 1-60 days actual deaths data & 61-75days predicted deaths data
+actual1.60_pred61.75 <- c(df1_korea$new_deaths[1:60], korea_pred)
+
+PredVsActual <- data.frame(df1_korea$tagged_day,df1_korea$new_deaths, actual1.60_pred61.75)
 PredVsActual
 
-ggplot() + geom_point(aes(x =PredVsActual$df1_korea.tagged_day.61.90.,
-                           y = PredVsActual$df1_korea.new_deaths.61.90.,colour = "actual")) +
-   geom_smooth(aes(x =PredVsActual$df1_korea.tagged_day.61.90.,
-                   y = PredVsActual$df1_korea.new_deaths.61.90.,colour = "actual")) +
-   geom_point(aes(x =PredVsActual$df1_korea.tagged_day.61.90.,
-                  y = PredVsActual$korea_pred,colour = "predicted")) +
-   geom_smooth(aes(x =PredVsActual$df1_korea.tagged_day.61.90.,
-                   y = PredVsActual$korea_pred,colour = "predicted")) + xlab("Tagged day") +
-   ylab("New_deaths") + ggtitle("Predicted vs Actual new_deaths for South Korea")
+ggplot() +geom_smooth(aes(x =PredVsActual$df1_korea.tagged_day,
+                   y = PredVsActual$actual1.60_pred61.75,colour = "predicted")) + 
+  geom_point(aes(x =PredVsActual$df1_korea.tagged_day,
+                 y = PredVsActual$actual1.60_pred61.75,colour = "predicted")) +
+  geom_smooth(aes(x =PredVsActual$df1_korea.tagged_day,
+                  y = PredVsActual$df1_korea.new_deaths,colour = "actual")) +
+  geom_point(aes(x =PredVsActual$df1_korea.tagged_day,
+                 y = PredVsActual$df1_korea.new_deaths,colour = "actual")) +
+  xlab("Count of days (since the 20th confirmed case)") + ylab("Daily new deaths") + 
+  ggtitle("Predicted vs Actual new deaths/day for South Korea")
 
 ###############################################################
 # KOREA: for flights_china vs new_deaths
@@ -121,8 +127,6 @@ fit <- nls(y_korea ~ f(x_korea,c(m,s,a,b)), data.frame(x_korea,y_korea), start=l
 # a*exp(-0.5*((x-m)/s)^2) + b
 summary(fit)
 
-plot(nlsResiduals(fit), which=0)
-
 #Interpretation:
 #Predict day 61: April 06, 2020 - should be #6 
 6.510*exp(-0.5*((61-15.366)/23.059)^2)  -1.141  #-0.22
@@ -136,22 +140,30 @@ fit_peak_loc <-ceiling(summary(fit)$parameters["m", 1])
 df1_korea$new_deaths[fit_peak_loc] #1
 
 # future days predictions for the curve
-
 korea_pred <- 6.510*exp(-0.5*((df1_korea$flights_china[61:90]-15.366)/23.059)^2) -1.141
+korea_pred <- ceiling(korea_pred)
 korea_pred
 
-PredVsActual <- data.frame(df1_korea$flights_china[61:90],df1_korea$new_deaths[61:90], korea_pred)
+# model evaluation fro residuals and MAE
+plot(nlsResiduals(fit), which=0)
+MAE(korea_pred, df1_korea$new_deaths[61:90])
+
+# vector with 1-60 days actual deaths data & 61-75days predicted deaths data
+actual1.60_pred61.75 <- c(df1_korea$new_deaths[1:60], korea_pred)
+
+PredVsActual <- data.frame(df1_korea$flights_china,df1_korea$new_deaths, actual1.60_pred61.75)
 PredVsActual
 
-ggplot() + geom_point(aes(x =PredVsActual$df1_korea.flights_china.61.90., 
-                          y = PredVsActual$df1_korea.new_deaths.61.90.,colour = "actual")) + 
-  geom_smooth(aes(x =PredVsActual$df1_korea.flights_china.61.90., 
-                  y = PredVsActual$df1_korea.new_deaths.61.90.,colour = "actual")) +
-  geom_point(aes(x =PredVsActual$df1_korea.flights_china.61.90., 
-                 y = PredVsActual$korea_pred,colour = "predicted")) + 
-  geom_smooth(aes(x =PredVsActual$df1_korea.flights_china.61.90., 
-                  y = PredVsActual$korea_pred,colour = "predicted")) + xlab("Flights in/out of China") +
-  ylab("New_deaths") + ggtitle("Predicted vs Actual new_deaths for South Korea")
+ggplot() + geom_point(aes(x =PredVsActual$df1_korea.flights_china, 
+                 y = PredVsActual$actual1.60_pred61.75,colour = "predicted")) + 
+  geom_smooth(aes(x =PredVsActual$df1_korea.flights_china, 
+                  y = PredVsActual$actual1.60_pred61.75,colour = "predicted")) +
+  geom_point(aes(x =PredVsActual$df1_korea.flights_china, 
+                 y = PredVsActual$df1_korea.new_deaths,colour = "actual")) + 
+  geom_smooth(aes(x =PredVsActual$df1_korea.flights_china, 
+                  y = PredVsActual$df1_korea.new_deaths,colour = "actual")) + 
+  xlab("# of Days since start of flight restrictions to/from china") +
+  ylab("Daily New Deaths") + ggtitle("Predicted vs Actual new deaths/day for South Korea")
 
 ###############################################################
 # KOREA: for new_confirmed vs new_deaths
@@ -184,8 +196,6 @@ fit <- nls(y_korea ~ f(x_korea,c(m,s,a,b)), data.frame(x_korea,y_korea), start=l
 # a*exp(-0.5*((x-m)/s)^2) + b
 summary(fit)
 
-plot(nlsResiduals(fit), which=0)
-
 #Interpretation:
 #Predict day 61: April 06, 2020 - should be #3 
 6.510*exp(-0.5*((61-15.366)/23.059)^2)  -1.141  #-0.22
@@ -202,16 +212,26 @@ df1_korea$new_deaths[fit_peak_loc] #1
 
 korea_pred <- 6.510*exp(-0.5*((df1_korea$new_confirmed[61:90]-15.366)/23.059)^2) -1.141
 korea_pred
+korea_pred <- ceiling(korea_pred)
+korea_pred
 
-PredVsActual <- data.frame(df1_korea$new_confirmed[61:90],df1_korea$new_deaths[61:90], korea_pred)
+# model evaluation fro residuals and MAE
+plot(nlsResiduals(fit), which=0)
+MAE(korea_pred, df1_korea$new_deaths[61:90])
+
+# vector with 1-60 days actual deaths data & 61-75days predicted deaths data
+actual1.60_pred61.75 <- c(df1_korea$new_deaths[1:60], korea_pred)
+
+PredVsActual <- data.frame(df1_korea$new_confirmed,df1_korea$new_deaths, actual1.60_pred61.75)
 PredVsActual
 
-ggplot() + geom_point(aes(x =PredVsActual$df1_korea.new_confirmed.61.90., 
-                          y = PredVsActual$df1_korea.new_deaths.61.90.,colour = "actual")) + 
-  geom_smooth(aes(x =PredVsActual$df1_korea.new_confirmed.61.90., 
-                  y = PredVsActual$df1_korea.new_deaths.61.90.,colour = "actual")) +
-  geom_point(aes(x =PredVsActual$df1_korea.new_confirmed.61.90., 
-                 y = PredVsActual$korea_pred,colour = "predicted")) + 
-  geom_smooth(aes(x =PredVsActual$df1_korea.new_confirmed.61.90., 
-                  y = PredVsActual$korea_pred,colour = "predicted")) + xlab("New Confirmed Cases") +
-  ylab("New_deaths") + ggtitle("Predicted vs Actual new_deaths for South Korea")
+ggplot() + geom_point(aes(x =PredVsActual$df1_korea.new_confirmed, 
+                 y = PredVsActual$actual1.60_pred61.75,colour = "predicted")) + 
+  geom_smooth(aes(x =PredVsActual$df1_korea.new_confirmed, 
+                  y = PredVsActual$actual1.60_pred61.75,colour = "predicted")) + 
+  geom_point(aes(x =PredVsActual$df1_korea.new_confirmed, 
+                 y = PredVsActual$df1_korea.new_deaths,colour = "actual")) + 
+  geom_smooth(aes(x =PredVsActual$df1_korea.new_confirmed, 
+                  y = PredVsActual$df1_korea.new_deaths,colour = "actual")) + 
+  xlab("Daily new confirmed cases") + ylab("Daily New Deaths") + 
+  ggtitle("Predicted vs Actual new deaths/day for South Korea")
