@@ -6,10 +6,6 @@ library(caret)
 library(nlstools)
 library(pscl)
 library(MASS)
-# library(rgl)
-# library(pwr)
-# library(car)
-
 
 df0 <- read.csv(file="HS614_COVID_dataset.csv", header=TRUE)
 head(df0)
@@ -125,9 +121,6 @@ summary(fit_nbr)
 fit_nbr2 <- glm.nb(new_deaths ~ tagged_day + new_confirmed, data=df1_italy[1:60, ])
 summary(fit_nbr2)
 
-fit_nbr2$theta
-# anova(fit_nbr)
-
 # predictions
 predictions <- fit_nbr2 %>% predict(df1_italy[61:75, ])
 actual60_predAfter61 <- c(df1_italy$new_deaths[1:60], predictions)
@@ -141,6 +134,9 @@ pR2(fit_nbr2)
 # llh       llhNull            G2      McFadden          r2ML          r2CU 
 # -1358.4744705 -9108.8469824 15500.7450238     0.8508621     1.0000000     1.0000000 
 MAE(df1_italy$new_deaths[61:75], predictions) #340.466
+plot(fit_nbr2,1)
+plot(fit_nbr2,3)
+plot(fit_nbr2,5)
 
 ggplot() + geom_point(aes(x =df1_italy$tagged_day, y = actual60_predAfter61,colour= "predicted")) + 
   geom_smooth(aes(x =df1_italy$tagged_day,y = actual60_predAfter61,colour = "predicted")) +
@@ -159,9 +155,6 @@ summary(fit_nbr)
 fit_nbr2 <- glm.nb(new_deaths ~ tagged_day + new_confirmed, data=df1_korea[1:60, ])
 summary(fit_nbr2)
 
-fit_nbr2$theta
-# anova(fit_nbr)
-
 # predictions
 predictions <- fit_nbr2 %>% predict(df1_korea[61:90, ])
 actual60_predAfter61 <- c(df1_korea$new_deaths[1:60], predictions)
@@ -175,6 +168,9 @@ pR2(fit_nbr2)
 #          llh      llhNull           G2     McFadden         r2ML         r2CU 
 # -115.6661508 -135.4902809   39.6482601    0.1463140    0.4835642    0.4889075 
 MAE(df1_korea$new_deaths[61:90], predictions) #1.864649
+plot(fit_nbr2,1)
+plot(fit_nbr2,3)
+plot(fit_nbr2,5)
 
 ggplot() + geom_point(aes(x =df1_korea$tagged_day, y = actual60_predAfter61,colour= "predicted")) + 
   geom_smooth(aes(x =df1_korea$tagged_day,y = actual60_predAfter61,colour = "predicted")) +
@@ -182,89 +178,3 @@ ggplot() + geom_point(aes(x =df1_korea$tagged_day, y = actual60_predAfter61,colo
   geom_smooth(aes(x =df1_korea$tagged_day,y = df1_korea$new_deaths, colour = "actual")) +
   xlab("Count of #days since 20th confirmed case") + ylab("Daily new deaths") + 
   ggtitle("Predicted vs Actual new deaths/day for South Korea")
-
-##############################################################################################################
-#trying lm for italy - gave similar results as polynomial linear regression
-
-fit_lm <- lm(new_deaths ~ tagged_day + new_confirmed + flights_china,data=df1_italy[1:60, ])
-summary(fit_lm)
-
-#removing flights_china
-fit_lm2 <- lm(new_deaths ~ tagged_day + new_confirmed ,data=df1_italy[1:60, ])
-summary(fit_lm2)
-
-# predictions
-predictions <- fit_lm2 %>% predict(df1_italy[61:75, ])
-actual60_predAfter61 <- c(df1_italy$new_deaths[1:60], predictions)
-actual60_predAfter61 <- ceiling(actual60_predAfter61)
-actual60_predAfter61
-
-cbind(df1_italy$new_deaths, actual60_predAfter61)
-
-# Model evaluation:
-pR2(fit_lm2)
-MAE(df1_italy$new_deaths[61:75], predictions) #161.6996
-
-ggplot() + geom_point(aes(x =df1_italy$tagged_day, y = actual60_predAfter61,colour= "predicted")) + 
-  geom_smooth(aes(x =df1_italy$tagged_day,y = actual60_predAfter61,colour = "predicted")) +
-  geom_point(aes(x =df1_italy$tagged_day,y = df1_italy$new_deaths, colour = "actual")) + 
-  geom_smooth(aes(x =df1_italy$tagged_day,y = df1_italy$new_deaths, colour = "actual")) +
-  xlab("Count of #days since 20th confirmed case") + ylab("Daily new deaths") + ggtitle("Predicted vs Actual new deaths/day for Italy")
-#################################################################################
-#trying lm for korea - gave similar results as polynomial linear regression
-
-fit_lm <- lm(new_deaths ~ tagged_day + new_confirmed + flights_china,data=df1_korea[1:60, ])
-summary(fit_lm)
-
-#removing flights_china
-fit_lm2 <- lm(new_deaths ~ tagged_day + new_confirmed ,data=df1_korea[1:60, ])
-summary(fit_lm2)
-
-#removing new_confirmed
-fit_lm3 <- lm(new_deaths ~ tagged_day ,data=df1_korea[1:60, ])
-summary(fit_lm3)
-
-# predictions
-predictions <- fit_lm3 %>% predict(df1_korea[61:90, ])
-actual60_predAfter61 <- c(df1_korea$new_deaths[1:60], predictions)
-actual60_predAfter61 <- ceiling(actual60_predAfter61)
-actual60_predAfter61
-
-cbind(df1_korea$new_deaths, actual60_predAfter61)
-
-# Model evaluation:
-pR2(fit_lm3)
-MAE(df1_korea$new_deaths[61:90], predictions) #5.798899
-
-ggplot() + geom_point(aes(x =df1_korea$tagged_day, y = actual60_predAfter61,colour= "predicted")) + 
-  geom_smooth(aes(x =df1_korea$tagged_day,y = actual60_predAfter61,colour = "predicted")) +
-  geom_point(aes(x =df1_korea$tagged_day,y = df1_korea$new_deaths, colour = "actual")) + 
-  geom_smooth(aes(x =df1_korea$tagged_day,y = df1_korea$new_deaths, colour = "actual")) +
-  xlab("Count of #days since 20th confirmed case") + ylab("Daily new deaths") +
-  ggtitle("Predicted vs Actual new deaths/day for South Korea")
-
-##############################################################################################################
-# Fitting Nonlinear Models with Scale Mixture of Skew-Normal Distributions - lib(‘nlsmsn’)
-
-library(nlsmsn)
-
-y <- df1_italy$new_deaths[1:60]
-x <- df1_italy$tagged_day[1:60]
-
-##Define non linear function
-# population ~ theta1/(1 + exp(-(theta2 + theta3*year)))
-
-nlf<-function(x,betas){
-  resp<- betas[1]/(1 +betas[2]*exp(-betas[3]*x))
-  return(resp)
-}
-
-# get initital values
-betas1.0 <- x[which.max(y)]
-# betas2.0 <- 
-
-#########################################################################################################
-
-
-
-
