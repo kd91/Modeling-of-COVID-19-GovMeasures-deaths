@@ -81,7 +81,7 @@ rls <- nlsResiduals(fit)
 plot(rls, which=0)
 #it's not a very good fit. 
 # points are dispersed equally above & below the line
-MAE(italy_pred, df1_italy$new_deaths[61:75])
+MAE(italy_pred, df1_italy$new_deaths[61:75])   #69.66667
 # test.nlsResiduals(rls)
 
 # vector with 1-60 days actual deaths data & 61-75days predicted deaths data
@@ -149,7 +149,7 @@ italy_pred <- ceiling(italy_pred)
 # model evaluation for residuals and MAE
 plot(nlsResiduals(fit), which=0)
 #it's not a very good fit. points are not uniformly dispersed
-MAE(italy_pred, df1_italy$new_deaths[61:75])
+MAE(italy_pred, df1_italy$new_deaths[61:75]) #221.5333
 
 # vector with 1-60 days actual deaths data & 61-75days predicted deaths data
 actual1.60_pred61.75 <- c(df1_italy$new_deaths[1:60], italy_pred)
