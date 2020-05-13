@@ -11,7 +11,7 @@ head(df0)
 
 df0$date <- as.Date(df0$date, "%m/%d/%y")
 
-df1 <- select(df0, c(country, tagged_day, new_confirmed, new_deaths, partial_lockdown, flights_china, school_closure))
+df1 <- dplyr::select(df0, c(country, tagged_day, new_confirmed, new_deaths, partial_lockdown, flights_china, school_closure))
 head(df1)
 
 summary(df1)
@@ -77,7 +77,7 @@ korea_pred
 
 # model evaluation fro residuals and MAE
 plot(nlsResiduals(fit), which=0)
-MAE(korea_pred, df1_korea$new_deaths[61:90])
+MAE(korea_pred, df1_korea$new_deaths[61:90]) # 1
 
 # vector with 1-60 days actual deaths data & 61-75days predicted deaths data
 actual1.60_pred61.75 <- c(df1_korea$new_deaths[1:60], korea_pred)
@@ -146,7 +146,7 @@ korea_pred
 
 # model evaluation fro residuals and MAE
 plot(nlsResiduals(fit), which=0)
-MAE(korea_pred, df1_korea$new_deaths[61:90])
+MAE(korea_pred, df1_korea$new_deaths[61:90]) #1
 
 # vector with 1-60 days actual deaths data & 61-75days predicted deaths data
 actual1.60_pred61.75 <- c(df1_korea$new_deaths[1:60], korea_pred)
