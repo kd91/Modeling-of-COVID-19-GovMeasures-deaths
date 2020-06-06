@@ -1,13 +1,11 @@
-setwd("~/Documents/KHUSHBU/MS/py_scripts_main/GitHub/Modeling-of-COVID-19-GovMeasures-deaths")
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 library(dplyr)
 library (ggplot2)
 library(caret)
 library(nlstools)
 
-# set.seed(1000)
-
-df0 <- read.csv(file="HS614_COVID_dataset.csv", header=TRUE)
+df0 <- read.csv(file="data/acaps_johnhopkins_combined_dataset.csv", header=TRUE)
 head(df0)
 
 df0$date <- as.Date(df0$date, "%m/%d/%y")
